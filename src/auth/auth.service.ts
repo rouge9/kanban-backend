@@ -17,14 +17,26 @@ export class AuthService {
   ) {}
 
   private async createSession(userId: string, email: string, role: string) {
-    const accessToken = this.jwtService.sign({ sub: userId, email, role });
-
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
     const session = await this.prisma.session.create({
       data: { userId, refreshToken: crypto.randomUUID(), expiresAt },
     });
+
+    const accessToken = this.jwtService.sign(
+      {
+        sub: userId,
+        email,
+        role,
+        sessionId: session.id,
+      },
+      {
+        secret: this.config.get<string>('JWT_SECRET'),
+        expiresIn: (this.config.get<string>('JWT_EXPIRES_IN') ||
+          '15m') as StringValue,
+      },
+    );
 
     const refreshToken = this.jwtService.sign(
       { sub: userId, email, sessionId: session.id },
@@ -63,9 +75,9 @@ export class AuthService {
   }
 
   async signup(dto: CreateUserDto) {
-    const user = await this.usersService.create(dto);
-    const tokens = await this.createSession(user.id, user.email, user.role);
-    return { ...tokens, user };
+    await this.usersService.create(dto);
+    // const tokens = await this.createSession(user.id, user.email, user.role);
+    return 'user created succefully';
   }
 
   async refreshToken(sessionId: string) {

@@ -3,7 +3,7 @@ import { Role } from 'generated/prisma/enums';
 
 export class UserEntity {
   @ApiProperty()
-  id!: number;
+  id!: string;
 
   @ApiProperty()
   email!: string;

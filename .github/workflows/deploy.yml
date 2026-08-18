@@ -1,7 +1,9 @@
-name: Deploy to Production
+name: CI
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
 
 jobs:
@@ -38,31 +40,17 @@ jobs:
 
       - name: Run migrations
         env:
-          DATABASE_URL: postgresql://test:test@localhost:5432/test?schema=public
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          DIRECT_URL: postgresql://test:test@localhost:5432/test
         run: npx prisma migrate deploy
 
       - name: Run tests
         env:
-          DATABASE_URL: postgresql://test:test@localhost:5432/test?schema=public
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          DIRECT_URL: postgresql://test:test@localhost:5432/test
           JWT_SECRET: test-secret
+          JWT_REFRESH_SECRET: test-refresh-secret
+          JWT_EXPIRES_IN: 15m
+          JWT_REFRESH_EXPIRES_IN: 7d
+          NODE_ENV: test
         run: npm test
-
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy to VPS
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd /opt/blog-api
-            git pull origin main
-            docker compose -f docker-compose.prod.yml up -d --build
-            docker system prune -f
