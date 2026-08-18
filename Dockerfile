@@ -9,7 +9,7 @@ RUN npm ci
 
 COPY . .
 RUN npx prisma generate
-RUN npx run build
+RUN npm run build
 RUN ls -la dist/
 
 # ─── Stage 2: Production ───
