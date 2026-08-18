@@ -2,7 +2,6 @@
 FROM node:22-alpine AS deps
 WORKDIR /app
 
-# Install OpenSSL for Prisma (Alpine needs this)
 RUN apk add --no-cache openssl
 
 COPY package*.json ./
@@ -18,6 +17,7 @@ COPY package*.json ./
 RUN npm ci
 
 COPY prisma ./prisma/
+COPY prisma.config.ts ./
 RUN npx prisma generate
 
 COPY . .
@@ -31,19 +31,17 @@ RUN apk add --no-cache openssl
 
 ENV NODE_ENV=production
 
-# Copy only necessary files
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/generated ./generated
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/src/generated ./src/generated
+COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 COPY package*.json ./
 
-# Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nestjs -u 1001
 USER nestjs
 
 EXPOSE 3000
 
-# Run migrations then start
-CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma generate && node dist/main.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
