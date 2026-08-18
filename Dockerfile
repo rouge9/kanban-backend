@@ -7,10 +7,10 @@ RUN apk add --no-cache openssl
 COPY package*.json ./
 RUN npm ci
 
-# copy everything first, then generate and build
 COPY . .
 RUN npx prisma generate
 RUN npm run build
+RUN ls -la dist/
 
 # ─── Stage 2: Production ───
 FROM node:22-alpine AS runner
