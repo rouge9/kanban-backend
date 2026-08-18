@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   Query,
-  ParseIntPipe,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
@@ -50,7 +49,7 @@ export class PostsController {
   @ApiOperation({ summary: 'Update your post' })
   update(
     @CurrentUser() user: JwtUser,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() dto: UpdatePostDto,
   ) {
     return this.postsService.update(user.id, id, dto);
@@ -60,7 +59,7 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete your post' })
-  remove(@CurrentUser() user: JwtUser, @Param('id', ParseIntPipe) id: number) {
+  remove(@CurrentUser() user: JwtUser, @Param('id') id: string) {
     return this.postsService.remove(user.id, id);
   }
 }

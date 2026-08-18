@@ -44,13 +44,34 @@ export class PrismaService
       );
     }
 
-    await this.$connect();
-    this.logger.log('Database connection established');
+    await this.connectWithRetry();
   }
 
   async onModuleDestroy() {
     await this.$disconnect();
     this.logger.log('Database connection closed');
+  }
+
+  private async connectWithRetry(retries = 3, delay = 3000): Promise<void> {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        await this.$connect();
+        this.logger.log('Successfully connected to Supabase Database');
+        return;
+      } catch (error) {
+        this.logger.warn(
+          `Database connection failed (Attempt ${attempt}/${retries}). Retrying in ${delay / 1000}s...`,
+        );
+        if (attempt === retries) {
+          this.logger.error(
+            'Could not connect to database after maximum retries.',
+            error,
+          );
+          throw error;
+        }
+        await new Promise((res) => setTimeout(res, delay));
+      }
+    }
   }
 
   async cleanDatabase() {

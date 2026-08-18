@@ -13,7 +13,7 @@ import { QueryPostsDto } from './dto/query-posts.dto';
 export class PostsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(authorId: number, dto: CreatePostDto) {
+  async create(authorId: string, dto: CreatePostDto) {
     const existingSlug = await this.prisma.post.findUnique({
       where: { slug: dto.slug },
     });
@@ -69,7 +69,7 @@ export class PostsService {
     return post;
   }
 
-  async update(userId: number, postId: number, dto: UpdatePostDto) {
+  async update(userId: string, postId: string, dto: UpdatePostDto) {
     const post = await this.prisma.post.findUnique({ where: { id: postId } });
     if (!post) throw new NotFoundException('Post not found');
     if (post.authorId !== userId) throw new ForbiddenException('Not your post');
@@ -88,7 +88,7 @@ export class PostsService {
     });
   }
 
-  async remove(userId: number, postId: number) {
+  async remove(userId: string, postId: string) {
     const post = await this.prisma.post.findUnique({ where: { id: postId } });
     if (!post) throw new NotFoundException('Post not found');
     if (post.authorId !== userId) throw new ForbiddenException('Not your post');

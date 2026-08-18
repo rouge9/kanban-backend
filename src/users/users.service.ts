@@ -49,7 +49,7 @@ export class UsersService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
       select: {
@@ -77,7 +77,7 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  async update(id: number, dto: UpdateUserDto) {
+  async update(id: string, dto: UpdateUserDto) {
     await this.findOne(id); // Ensure exists
     if (dto.password) {
       dto.password = await bcrypt.hash(dto.password, 12);
@@ -95,9 +95,22 @@ export class UsersService {
     });
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.findOne(id);
     await this.prisma.user.delete({ where: { id } });
     return { message: `User #${id} deleted successfully` };
+  }
+
+  async getUserSessions(id: string) {
+    const userSession = await this.prisma.session.findMany({
+      where: { userId: id },
+      select: {
+        id: true,
+        userId: true,
+        expiresAt: true,
+        createdAt: true,
+      },
+    });
+    return userSession;
   }
 }

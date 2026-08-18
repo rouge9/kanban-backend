@@ -16,9 +16,6 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     PostsModule,
     AuthModule,
-    // AuthModule,
-    // UsersModule,
-    // PostsModule,
   ],
   providers: [
     {
