@@ -13,8 +13,8 @@ async function bootstrap() {
 
   // Swagger
   const config = new DocumentBuilder()
-    .setTitle('Blog API')
-    .setDescription('Production-ready NestJS + Prisma + PostgreSQL API')
+    .setTitle('Kanban board project management')
+    .setDescription('Production-ready Project management API')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

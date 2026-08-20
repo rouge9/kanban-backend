@@ -1,18 +1,18 @@
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: blog_postgres
+    container_name: kanban_postgres
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: blog_db
+      POSTGRES_DB: kanban_db
     ports:
       - '5433:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -d blog_db']
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d kanban_db']
       interval: 5s
       timeout: 2s
       retries: 10
@@ -21,12 +21,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: blog_api
+    container_name: kanban-api
     restart: always
     ports:
       - '3000:3000'
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/blog_db?schema=public
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/kanban_db?schema=public
       JWT_SECRET: dev-secret-key
       NODE_ENV: development
     volumes:
