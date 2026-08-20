@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: kanban-api
+    container_name: kanban-api_prod
     restart: always
     ports:
       - '3000:3000'
