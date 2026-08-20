@@ -1,0 +1,14 @@
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  order       Int      @default(0)
+  column      Column   @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  columnId    String   @map("column_id")
+  assignee    User?    @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+  assigneeId  String?  @map("assignee_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("tasks")
+}

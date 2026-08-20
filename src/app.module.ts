@@ -3,8 +3,13 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
-import { PostsModule } from './posts/posts.module';
 import { AuthModule } from './auth/auth.module';
+import { OrganizationsModule } from './organizations/organizations.module';
+import { TeamsModule } from './teams/teams.module';
+import { ProjectsModule } from './projects/projects.module';
+import { BoardsModule } from './boards/boards.module';
+import { ColumnsModule } from './columns/columns.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -14,8 +19,13 @@ import { AuthModule } from './auth/auth.module';
     }),
     PrismaModule,
     UsersModule,
-    PostsModule,
     AuthModule,
+    OrganizationsModule,
+    TeamsModule,
+    ProjectsModule,
+    BoardsModule,
+    ColumnsModule,
+    TasksModule,
   ],
   providers: [
     {

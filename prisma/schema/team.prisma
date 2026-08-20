@@ -1,0 +1,25 @@
+model Team {
+  id             String       @id @default(uuid())
+  name           String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String       @map("organization_id")
+  projects       Project[]
+  members        TeamMember[]
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id        String   @id @default(uuid())
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId    String   @map("team_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([teamId, userId])
+  @@map("team_members")
+}

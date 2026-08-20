@@ -1,18 +1,21 @@
 model User {
-    id        String    @id @default(uuid())
-    email     String    @unique
-    password  String
-    name      String?
-    role      Role      @default(USER)
-    posts     Post[]
-    sessions  Session[]
-    createdAt DateTime  @default(now()) @map("created_at")
-    updatedAt DateTime  @updatedAt @map("updated_at")
+  id                  String               @id @default(uuid())
+  email               String               @unique
+  password            String
+  name                String?
+  role                Role                 @default(USER)
+  organizationMembers OrganizationMember[]
+  teamMembers         TeamMember[]
+  projectMembers      ProjectMember[]
+  assignedTasks       Task[]
+  sessions            Session[]
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
 
-    @@map("users")
+  @@map("users")
 }
 
 enum Role {
-    USER
-    ADMIN
+  USER
+  ADMIN
 }

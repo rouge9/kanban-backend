@@ -44,7 +44,6 @@ export class UsersService {
         name: true,
         role: true,
         createdAt: true,
-        _count: { select: { posts: true } },
       },
     });
   }
@@ -58,15 +57,6 @@ export class UsersService {
         name: true,
         role: true,
         createdAt: true,
-        posts: {
-          select: {
-            id: true,
-            title: true,
-            slug: true,
-            published: true,
-            createdAt: true,
-          },
-        },
       },
     });
     if (!user) throw new NotFoundException(`User #${id} not found`);

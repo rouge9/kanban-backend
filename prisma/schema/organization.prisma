@@ -1,0 +1,28 @@
+model Organization {
+  id          String               @id @default(uuid())
+  name        String
+  description String?
+  website     String?
+  status      String               @default("ACTIVE")
+  teams       Team[]
+  projects    Project[]
+  members     OrganizationMember[]
+  createdAt   DateTime             @default(now()) @map("created_at")
+  updatedAt   DateTime             @updatedAt @map("updated_at")
+
+  @@map("organizations")
+}
+
+model OrganizationMember {
+  id             String       @id @default(uuid())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String       @map("organization_id")
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String       @map("user_id")
+  role           Role         @default(USER)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  @@unique([organizationId, userId])
+  @@map("organization_members")
+}
