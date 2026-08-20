@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { CreateColumnDto } from './dto/create-column.dto';
 import { UpdateColumnDto } from './dto/update-column.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -13,10 +17,10 @@ export class ColumnsService {
         id: boardId,
         project: {
           organization: {
-            members: { some: { userId } }
-          }
-        }
-      }
+            members: { some: { userId } },
+          },
+        },
+      },
     });
     if (!board) throw new ForbiddenException('Access denied to this board');
     return board;
@@ -26,11 +30,11 @@ export class ColumnsService {
     await this.checkBoardAccess(createColumnDto.boardId, userId);
 
     if (createColumnDto.order === undefined) {
-       const maxCol = await this.prisma.column.findFirst({
-         where: { boardId: createColumnDto.boardId },
-         orderBy: { order: 'desc' },
-       });
-       createColumnDto.order = maxCol ? maxCol.order + 1 : 0;
+      const maxCol = await this.prisma.column.findFirst({
+        where: { boardId: createColumnDto.boardId },
+        orderBy: { order: 'desc' },
+      });
+      createColumnDto.order = maxCol ? maxCol.order + 1 : 0;
     }
 
     return this.prisma.column.create({
@@ -44,33 +48,34 @@ export class ColumnsService {
         board: {
           project: {
             organization: {
-              members: { some: { userId } }
-            }
-          }
-        }
-      }
+              members: { some: { userId } },
+            },
+          },
+        },
+      },
     });
   }
 
   async findOne(id: string, userId: string) {
     const column = await this.prisma.column.findFirst({
-      where: { 
+      where: {
         id,
         board: {
           project: {
             organization: {
-              members: { some: { userId } }
-            }
-          }
-        }
+              members: { some: { userId } },
+            },
+          },
+        },
       },
       include: {
         tasks: {
           orderBy: { order: 'asc' },
         },
-      }
+      },
     });
-    if (!column) throw new NotFoundException(`Column #${id} not found or access denied`);
+    if (!column)
+      throw new NotFoundException(`Column #${id} not found or access denied`);
     return column;
   }
 

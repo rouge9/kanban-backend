@@ -23,7 +23,10 @@ export class ColumnsController {
   constructor(private readonly columnsService: ColumnsService) {}
 
   @Post()
-  create(@Body() createColumnDto: CreateColumnDto, @CurrentUser() user: JwtUser) {
+  create(
+    @Body() createColumnDto: CreateColumnDto,
+    @CurrentUser() user: JwtUser,
+  ) {
     return this.columnsService.create(createColumnDto, user.id);
   }
 
