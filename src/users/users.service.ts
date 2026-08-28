@@ -5,12 +5,26 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
+import { OrganizationsService } from '../organizations/organizations.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private organizationsService: OrganizationsService,
+  ) {}
+
+  async ensureUserHasOrganization(user: { id: string; name?: string | null }) {
+    const membership = await this.prisma.organizationMember.findFirst({
+      where: { userId: user.id },
+    });
+
+    if (!membership) {
+      await this.organizationsService.create({ name: 'My Workspace' }, user.id);
+    }
+  }
 
   async create(dto: CreateUserDto) {
     const existing = await this.prisma.user.findUnique({

@@ -57,6 +57,38 @@ describe('OrganizationsService', () => {
             role: 'ADMIN',
           },
         },
+        teams: {
+          create: {
+            name: 'General',
+            members: {
+              create: {
+                userId,
+              },
+            },
+          },
+        },
+        projects: {
+          create: {
+            name: 'First Project',
+            members: {
+              create: {
+                userId,
+              },
+            },
+            boards: {
+              create: {
+                name: 'Main Board',
+                columns: {
+                  create: [
+                    { name: 'TODO', order: 0 },
+                    { name: 'IN PROGRESS', order: 1 },
+                    { name: 'DONE', order: 2 },
+                  ],
+                },
+              },
+            },
+          },
+        },
       },
     });
   });

@@ -22,8 +22,10 @@ export class UsersController {
   @Get('me')
   @ApiOperation({ summary: 'Get current user profile' })
   @ApiResponse({ status: 200, type: UserEntity })
-  getMe(@CurrentUser() user: JwtUser) {
-    return this.usersService.findOne(user.id);
+  async getMe(@CurrentUser() user: JwtUser) {
+    const userProfile = await this.usersService.findOne(user.id);
+    await this.usersService.ensureUserHasOrganization(userProfile);
+    return userProfile;
   }
 
   @Get('me/sessions')

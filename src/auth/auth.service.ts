@@ -43,7 +43,7 @@ export class AuthService {
       {
         secret: this.config.get<string>('JWT_REFRESH_SECRET'),
         expiresIn: (this.config.get<string>('JWT_REFRESH_EXPIRES_IN') ||
-          '7d') as StringValue,
+          '2d') as StringValue,
       },
     );
 
@@ -62,7 +62,8 @@ export class AuthService {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return null;
 
-    const { ...result } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _, ...result } = user;
     return result;
   }
 
@@ -88,7 +89,7 @@ export class AuthService {
 
     if (!session) throw new UnauthorizedException('Session not found');
 
-    await this.prisma.session.delete({ where: { id: sessionId } });
+    await this.prisma.session.deleteMany({ where: { id: sessionId } });
     return this.createSession(
       session.userId,
       session.user.email,
@@ -97,7 +98,7 @@ export class AuthService {
   }
 
   async logout(sessionId: string) {
-    await this.prisma.session.delete({ where: { id: sessionId } });
+    await this.prisma.session.deleteMany({ where: { id: sessionId } });
     return { message: 'Logged out successfully' };
   }
 }

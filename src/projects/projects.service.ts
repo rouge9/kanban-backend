@@ -51,7 +51,26 @@ export class ProjectsService {
         },
       },
       include: {
-        boards: true,
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+        boards: {
+          include: {
+            columns: {
+              include: {
+                tasks: true,
+              },
+            },
+          },
+        },
       },
     });
     if (!project)
