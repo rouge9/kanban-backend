@@ -28,6 +28,18 @@ export class ProjectsService {
         members: {
           create: { userId },
         },
+        boards: {
+          create: {
+            name: 'Main Board',
+            columns: {
+              create: [
+                { name: 'TODO', order: 0, color: 'bg-blue-500' },
+                { name: 'IN PROGRESS', order: 1, color: 'bg-yellow-500' },
+                { name: 'DONE', order: 2, color: 'bg-green-500' },
+              ],
+            },
+          },
+        },
       },
     });
   }
@@ -78,8 +90,21 @@ export class ProjectsService {
     return project;
   }
 
+  async checkOrgAdminAccess(organizationId: string, userId: string) {
+    const member = await this.prisma.organizationMember.findUnique({
+      where: { organizationId_userId: { organizationId, userId } },
+    });
+    if (!member || member.role !== 'ADMIN') {
+      throw new ForbiddenException(
+        'Only organization admins can perform this action',
+      );
+    }
+    return member;
+  }
+
   async update(id: string, updateProjectDto: UpdateProjectDto, userId: string) {
     const project = await this.findOne(id, userId);
+    await this.checkOrgAdminAccess(project.organizationId, userId);
     return this.prisma.project.update({
       where: { id: project.id },
       data: updateProjectDto,
@@ -88,6 +113,7 @@ export class ProjectsService {
 
   async remove(id: string, userId: string) {
     const project = await this.findOne(id, userId);
+    await this.checkOrgAdminAccess(project.organizationId, userId);
     return this.prisma.project.delete({
       where: { id: project.id },
     });

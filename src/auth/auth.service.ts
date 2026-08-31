@@ -77,8 +77,7 @@ export class AuthService {
 
   async signup(dto: CreateUserDto) {
     await this.usersService.create(dto);
-    // const tokens = await this.createSession(user.id, user.email, user.role);
-    return 'user created succefully';
+    return { message: 'User created successfully' };
   }
 
   async refreshToken(sessionId: string) {

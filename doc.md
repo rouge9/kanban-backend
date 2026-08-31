@@ -95,12 +95,12 @@ This project uses a modular Prisma schema. Think of it as a blueprint for your t
 **Key Models:**
 
 - **User**: Represents a person logging into the app. Contains `email`, `password`, and relations to assigned tasks, teams, projects, and organizations.
-- **Organization**: The top-level grouping (like a company). Has many `OrganizationMember`s, `Team`s, and `Project`s.
+- **Organization**: The top-level grouping (like a SaaS tenant/workspace). Has many `OrganizationMember`s (which have `role`s like `ADMIN` or `USER`), `Team`s, and `Project`s.
 - **Team**: A subgroup within an organization. Has many `TeamMember`s.
-- **Project**: Represents a specific project. Belongs to an organization and optionally a team. Contains `Board`s.
+- **Project**: Represents a specific project. Belongs to an organization and optionally a team. Contains `Board`s. *Note: Creating a new project automatically generates a default "Main Board" with "TODO", "IN PROGRESS", and "DONE" columns.*
 - **Board**: A Kanban board belonging to a project. Contains `Column`s.
-- **Column**: A vertical list on a board (e.g., "To Do", "Done"). Contains `Task`s. Ordered by an `order` integer.
-- **Task**: An individual work item. Belongs to a column, can have an `assignee` (User), and has an `order` integer for positioning.
+- **Column**: A vertical list on a board (e.g., "To Do", "Done"). Contains `Task`s. Ordered by an `order` integer and has a `color` string for UI customization.
+- **Task**: An individual work item. Belongs to a column, can have an `assigneeId` linking it to a `User`, and has an `order` integer for positioning.
 - **Session**: Stores refresh tokens for authenticated users to maintain their login session securely.
 
 **Key concepts:**
@@ -125,7 +125,14 @@ This app uses **JWT (JSON Web Tokens)** with a Refresh Token strategy.
 
 ---
 
-## Kanban Features
+## Kanban & SaaS Features
+
+### SaaS Multi-Tenancy & Access Control
+
+The API is structured to support a multi-tenant SaaS architecture:
+- **Automatic Admin**: When a user creates an Organization, they are automatically granted the `ADMIN` role for that specific organization.
+- **Strict Boundaries**: Modifying or deleting an organization (or its projects) requires the user to be an `ADMIN` in that specific organization. Global roles do not override this, ensuring complete tenant isolation.
+- **Team Management**: Admins can invite new members to their organization by email (`POST /organizations/:id/members`) or remove existing ones, managing access directly within the app.
 
 ### Boards, Columns, and Tasks
 
@@ -133,7 +140,8 @@ The core of the app revolves around the Kanban flow.
 
 - **Ordering**: Both `Column` and `Task` have an `order` field. When a user drags and drops a task to a new position or a new column on the frontend, the API updates the `order` and `columnId` of the task to reflect its new placement.
 - **Hierarchy**: `Organization -> Project -> Board -> Column -> Task`.
-- **Assignees**: A task can optionally have an `assigneeId` linking it to a `User`.
+- **Assignees**: A task can optionally have an `assigneeId` linking it to a `User` (a member of the organization).
+- **Default Provisioning**: Every new project instantly gets a fully functional board with "TODO", "IN PROGRESS", and "DONE" columns, making onboarding frictionless.
 
 ---
 
