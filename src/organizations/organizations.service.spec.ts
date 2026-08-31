@@ -80,9 +80,9 @@ describe('OrganizationsService', () => {
                 name: 'Main Board',
                 columns: {
                   create: [
-                    { name: 'TODO', order: 0 },
-                    { name: 'IN PROGRESS', order: 1 },
-                    { name: 'DONE', order: 2 },
+                    { name: 'TODO', order: 0, color: 'bg-blue-500' },
+                    { name: 'IN PROGRESS', order: 1, color: 'bg-yellow-500' },
+                    { name: 'DONE', order: 2, color: 'bg-green-500' },
                   ],
                 },
               },
@@ -101,6 +101,7 @@ describe('OrganizationsService', () => {
     expect(result).toEqual(orgs);
     expect(mockPrismaService.organization.findMany).toHaveBeenCalledWith({
       where: { members: { some: { userId } } },
+      include: { members: true },
     });
   });
 

@@ -71,9 +71,12 @@ describe('ProjectsService', () => {
   });
 
   it('should update a project', async () => {
-    const project = { id: 'proj-1' };
+    const project = { id: 'proj-1', organizationId: 'org-1' };
     const updateDto = { name: 'Updated' };
     mockPrismaService.project.findFirst.mockResolvedValue(project);
+    mockPrismaService.organizationMember.findUnique.mockResolvedValue({
+      role: 'ADMIN',
+    });
     mockPrismaService.project.update.mockResolvedValue({
       ...project,
       ...updateDto,
@@ -84,8 +87,11 @@ describe('ProjectsService', () => {
   });
 
   it('should remove a project', async () => {
-    const project = { id: 'proj-1' };
+    const project = { id: 'proj-1', organizationId: 'org-1' };
     mockPrismaService.project.findFirst.mockResolvedValue(project);
+    mockPrismaService.organizationMember.findUnique.mockResolvedValue({
+      role: 'ADMIN',
+    });
     mockPrismaService.project.delete.mockResolvedValue(project);
 
     const result = await service.remove('proj-1', userId);
